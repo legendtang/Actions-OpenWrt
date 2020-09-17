@@ -12,3 +12,7 @@
 
 # Modify default IP
 #sed -i 's/192.168.1.1/192.168.50.5/g' package/base-files/files/bin/config_generate
+
+# Change ROM size
+mv -vf $GITHUB_WORKSPACE/mt7621.mk $GITHUB_WORKSPACE/openwrt/target/linux/ramips/image/mt7621.mk
+mv -vf $GITHUB_WORKSPACE/mt7621_phicomm_k2p.dts $GITHUB_WORKSPACE/openwrt/target/linux/ramips/dts/mt7621_phicomm_k2p.dts
