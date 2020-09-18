@@ -56,7 +56,7 @@ jobs:
         echo "::add-path::/usr/local/opt/gnu-sed/libexec/gnubin"
         hdiutil create -size 60g -type SPARSE -fs "Case-sensitive HFS+" -volname OpenWrt OpenWrt.sparseimage
         hdiutil attach OpenWrt.sparseimage
-        curl -fsSL https://raw.githubusercontent.com/P3TERX/dotfiles/master/.bashrc >> ~/.bashrc
+        curl -fsSL https://raw.githubusercontent.com/P3TERX/dotfiles/master/.zshrc >> ~/.zshrc
 
     - name: Clone source code
       working-directory: /Volumes/OpenWrt
