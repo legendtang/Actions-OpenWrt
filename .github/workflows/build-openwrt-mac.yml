@@ -1,14 +1,12 @@
-#
-# Copyright (c) 2019-2020 P3TERX <https://p3terx.com>
-#
-# This is free software, licensed under the MIT License.
-# See /LICENSE for more information.
-#
+#=================================================
 # https://github.com/P3TERX/Actions-OpenWrt
-# Description: Build OpenWrt using GitHub Actions
-#
+# Description: Build OpenWrt using GitHub Actions(macOS)
+# Lisence: MIT
+# Author: P3TERX
+# Blog: https://p3terx.com
+#=================================================
 
-name: Build OpenWrt
+name: Build OpenWrt (macOS)
 
 on:
   repository_dispatch:
@@ -40,7 +38,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: macos-latest
     if: github.event.repository.owner.id == github.event.sender.id
 
     steps:
@@ -48,24 +46,24 @@ jobs:
       uses: actions/checkout@main
 
     - name: Initialization environment
-      env:
-        DEBIAN_FRONTEND: noninteractive
       run: |
-        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
-        sudo -E apt-get -qq update
-        sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-1804)
-        sudo -E apt-get -qq autoremove --purge
-        sudo -E apt-get -qq clean
-        sudo timedatectl set-timezone "$TZ"
-        sudo mkdir -p /workdir
-        sudo chown $USER:$GROUPS /workdir
+        brew install coreutils diffutils findutils gawk gnu-getopt gnu-tar grep wget quilt xz
+        echo "::add-path::/usr/local/opt/coreutils/libexec/gnubin"
+        echo "::add-path::/usr/local/opt/findutils/libexec/gnubin"
+        echo "::add-path::/usr/local/opt/gnu-getopt/bin"
+        echo "::add-path::/usr/local/opt/gnu-tar/libexec/gnubin"
+        echo "::add-path::/usr/local/opt/grep/libexec/gnubin"
+        echo "::add-path::/usr/local/opt/gnu-sed/libexec/gnubin"
+        hdiutil create -size 60g -type SPARSE -fs "Case-sensitive HFS+" -volname OpenWrt OpenWrt.sparseimage
+        hdiutil attach OpenWrt.sparseimage
+        curl -fsSL https://raw.githubusercontent.com/P3TERX/dotfiles/master/.bashrc >> ~/.bashrc
 
     - name: Clone source code
-      working-directory: /workdir
+      working-directory: /Volumes/OpenWrt
       run: |
-        df -hT $PWD
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
-        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        ln -sf /Volumes/OpenWrt/openwrt $GITHUB_WORKSPACE/openwrt
+        sed -i "s/grep Apple.LLVM/grep -E 'Apple.(LLVM|clang)'/g" openwrt/include/prereq-build.mk
 
     - name: Load custom feeds
       run: |
